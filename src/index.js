@@ -8,10 +8,17 @@ class App extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {key: '', alphabet: this.calculateAlphabet('')};
+        this.state = {
+            key: '',
+            alphabet: this.FULL_ALPHABET,
+            encryptedText: '',
+            plainText: '',
+        };
 
         this.onChangeKey = this.onChangeKey.bind(this);
         this.calculateAlphabet = this.calculateAlphabet.bind(this);
+        this.onChangeEncryptedText = this.onChangeEncryptedText.bind(this);
+        this.onChangePlainText = this.onChangePlainText.bind(this);
     }
 
     onChangeKey(e) {
@@ -19,6 +26,38 @@ class App extends React.Component {
         let alphabet = this.calculateAlphabet(key);
         this.setState({key: key, alphabet: alphabet});
         e.preventDefault();
+    }
+
+    onChangePlainText(e) {
+        let plain = e.target.value.toUpperCase();
+        let encrypted = App.performEncryption(plain, this.FULL_ALPHABET, this.state.alphabet);
+        this.setState({plainText: plain, encryptedText: encrypted});
+        e.preventDefault();
+    }
+
+    onChangeEncryptedText(e) {
+        let encrypted = e.target.value.toUpperCase();
+        let plain = App.performEncryption(encrypted, this.state.alphabet, this.FULL_ALPHABET);
+        this.setState({plainText: plain, encryptedText: encrypted});
+        e.preventDefault();
+    }
+
+    static performEncryption(message, starting_alphabet, target_alphabet) {
+        let conversions = {};
+        for (let x = 0; x < starting_alphabet.length; x++) {
+            conversions[starting_alphabet.charAt(x)] = target_alphabet.charAt(x);
+        }
+        // console.log(conversions);
+
+        let res = '';
+        for (let x = 0; x < message.length; x++) {
+            let char1 = message.charAt(x);
+            let char2 = (conversions.hasOwnProperty(char1) ? conversions[char1] : char1);
+            // console.log(char1 + " -> " + char2);
+            res = res.concat(char2);
+        }
+
+        return res;
     }
 
     calculateAlphabet(key) {
@@ -49,10 +88,16 @@ class App extends React.Component {
                 <h1>Caesar Cypher</h1>
                 <form>
                     <label>Key: </label>
-                    <input type='string' value={this.state.key} onChange={this.onChangeKey} />
+                    <input type='string' value={this.state.key} onChange={this.onChangeKey}/>
                 </form>
                 <p>The key is {this.state.key}</p>
                 <p>The alphabet is {this.state.alphabet}</p>
+                <form>
+                    Plaintext
+                    <textarea value={this.state.plainText} onChange={this.onChangePlainText} rows='6' cols='50'/>
+                    Encrypted
+                    <textarea value={this.state.encryptedText} onChange={this.onChangeEncryptedText} rows='6' cols='50'/>
+                </form>
             </div>
         )
     }
