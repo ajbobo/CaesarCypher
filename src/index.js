@@ -85,7 +85,7 @@ class App extends React.Component {
     render() {
         return (
             <div>
-                <h1>Caesar Cypher</h1>
+                <h1>Caesar Cipher</h1>
                 <form>
                     <label>Key: </label>
                     <input type='string' value={this.state.key} onChange={this.onChangeKey}/>
